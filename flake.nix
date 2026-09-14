@@ -21,7 +21,7 @@
     {
       packages = forAllSystems (system: {
         default = pkgs.${system}.stdenv.mkDerivation {
-          name = "lab00";
+          name = "lab02";
           src = ./.;
           buildInputs = with pkgs.${system}; [
             cmake
@@ -31,19 +31,19 @@
             rtos-nix.packages.${system}.pico-sdk-overriden
             picotool
             unity-test
-						pioasm
+            pioasm
           ];
           phases = [ "installPhase" ];
           installPhase = ''
-						export PICO_SDK_PATH=${rtos-nix.packages.${system}.pico-sdk-overriden}/lib/pico-sdk
-						export FREERTOS_PATH=${rtos-nix.freertos}
-						export OPENOCD_PATH=${pkgs.${system}.openocd}
-						export UNITY_PATH=${rtos-nix.unity}
-						mkdir -p $out
-						cmake -B $out -S $src/
-						cd $out
-						cmake --build . --target all
-					'';
+            						export PICO_SDK_PATH=${rtos-nix.packages.${system}.pico-sdk-overriden}/lib/pico-sdk
+            						export FREERTOS_PATH=${rtos-nix.freertos}
+            						export OPENOCD_PATH=${pkgs.${system}.openocd}
+            						export UNITY_PATH=${rtos-nix.unity}
+            						mkdir -p $out
+            						cmake -B $out -S $src/
+            						cd $out
+            						cmake --build . --target all
+            					'';
         };
 
       });
