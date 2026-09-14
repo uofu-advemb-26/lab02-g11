@@ -21,30 +21,45 @@ bool on = false;
 #define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 #define BLINK_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 
+/**
+ * @brief Blinking led once every 5500 ms.
+ *
+ * @param void
+ */
 void blink_task(__unused void *params) {
   hard_assert(cyw43_arch_init() == PICO_OK);
   while (true) {
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
-    if (count++ % 11)
+    if (count++ % 11) // add to count and check if divisible by 11
       on = !on;
     vTaskDelay(500);
   }
 }
 
+/**
+ * @brief Initialize blink task, and reverses stdin alphabet
+ *
+ * @param void
+ */
 void main_task(__unused void *params) {
   xTaskCreate(blink_task, "BlinkThread", BLINK_TASK_STACK_SIZE, NULL,
               BLINK_TASK_PRIORITY, NULL);
   char c;
-  while (c = getchar()) {
-    if (c <= 'z' && c >= 'a')
+  while (c = getchar()) {     // Get char from stdin
+    if (c <= 'z' && c >= 'a') // If lower, return upper
       putchar(c - 32);
-    else if (c >= 'A' && c <= 'Z')
+    else if (c >= 'A' && c <= 'Z') // If upper, return lower
       putchar(c + 32);
     else
       putchar(c);
   }
 }
 
+/**
+ * @brief Init pico rtos, schedule main_task. See main_task func for more.
+ *
+ * @return
+ */
 int main(void) {
   stdio_init_all();
   const char *rtos_name;
