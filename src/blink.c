@@ -12,14 +12,14 @@
 #include "pico/stdlib.h"
 
 /**
- * @brief Blinks an LED once
+ * @brief Blinks an LED once. WARNING: Ensure you have initialized the
+ * peripheral before running this function.
  *
  * @param void
  */
-void blink_led_once(__unused void *params) {
-  // cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
-  // if (count++ % 11) // add to count and check if divisible by 11
-  //   on = !on;
-  while (true) {
-  }
+void blink_led_once(int *count, bool *on) {
+  cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, *on);
+  *count = *count + 1;
+  if (*count % 11) // add to count and check if divisible by 11
+    *on = !*on;
 }

@@ -30,7 +30,7 @@ bool on = false;
 void blink_task(__unused void *params) {
   hard_assert(cyw43_arch_init() == PICO_OK);
   while (true) {
-    blink_led_once();
+    blink_led_once(&count, &on);
     vTaskDelay(500);
   }
 }
