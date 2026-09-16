@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "FreeRTOS.h"
+#include "blink.h"
 #include "task.h"
 
 #include "pico/cyw43_arch.h"
@@ -29,9 +30,7 @@ bool on = false;
 void blink_task(__unused void *params) {
   hard_assert(cyw43_arch_init() == PICO_OK);
   while (true) {
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
-    if (count++ % 11) // add to count and check if divisible by 11
-      on = !on;
+    blink_led_once();
     vTaskDelay(500);
   }
 }

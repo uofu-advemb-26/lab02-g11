@@ -34,7 +34,7 @@
           installPhase = ''
             						export PICO_SDK_PATH=${rtos-nix.packages.${system}.pico-sdk-overriden}/lib/pico-sdk
             						export FREERTOS_PATH=${rtos-nix.freertos}
-            						export OPENOCD_PATH=${pkgs.${system}.openocd-2040}
+            						export OPENOCD_PATH=${pkgs.${system}.openocd-rp2040}
             						export UNITY_PATH=${rtos-nix.unity}
             						mkdir -p $out
             						cmake -B $out -S $src/ -DCMAKE_BUILD_TYPE=Debug 
