@@ -1,54 +1,49 @@
-name: CMake
-on: [push, pull_request]
+name: RP2040 tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  test-elf:
     runs-on: ubuntu-latest
-    steps:
-      - name: Clean workspace
-        run: |
-          echo "Cleaning up previous run"
-          rm -rf "${{ github.workspace }}"
-          mkdir -p "${{ github.workspace }}"
+    timeout-minutes: 10
 
-      - name: Install GCC
-        id: arm-none-eabi-gcc-action
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Arm GNU toolchain
         uses: carlosperate/arm-none-eabi-gcc-action@v1
         with:
-          release: '13.2.Rel1'
+          release: 13.2.Rel1
 
-      - uses: actions/checkout@v3
+      - name: Configure test ELF
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DPICO_SIMULATOR=ON
+
+      - name: Build test ELF
+        run: cmake --build build --target mytest --parallel
+
+      - name: Run test ELF in a simulated Raspberry Pi Pico
+        uses: wokwi/wokwi-ci-action@v1
         with:
-          path: ${{github.workspace}}/source
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: /
+          timeout: 12000
+          expect_text: 2 Tests 0 Failures 0 Ignored
+          fail_text: FAIL
+          serial_log_file: wokwi-serial.log
 
-      - name: Say hello
-        shell: bash
-        working-directory: ${{github.workspace}}/source
-        run: |
-            ls
-            test ! -f hello.txt
-            test ! -f main.o
-            test ! -f main.i
-            test ! -f main.s
-            make hello.txt
-            test -f hello.txt
-
-      - name: Test Compile
-        shell: bash
-        working-directory: ${{github.workspace}}/source
-        run: |
-            test ! -f firmware.elf
-            PICO_TOOLCHAIN_PATH=${{ steps.arm-none-eabi-gcc-action.outputs.path }}/.. make
-            test -f firmware.elf
-
-      - name: Test Clean
-        shell: bash
-        working-directory: ${{github.workspace}}/source
-        run: |
-            make clean
-            test ! -f hello.txt
-            test ! -f main.o
-            test ! -f main.i
-            test ! -f main.s
-            test ! -f firmware.elf
-
+      - name: Upload simulator serial log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wokwi-serial-log
+          path: wokwi-serial.log
+          if-no-files-found: ignore

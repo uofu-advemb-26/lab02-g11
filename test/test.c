@@ -23,11 +23,15 @@ void test_multiplication(void) {
 
 int main(void) {
   stdio_init_all();
+#ifndef PICO_SIMULATOR
   sleep_ms(5000); // Give time for TTY to attach.
+#endif
   printf("Start tests\n");
   UNITY_BEGIN();
   RUN_TEST(test_variable_assignment);
   RUN_TEST(test_multiplication);
-  sleep_ms(5000);
+#ifndef PICO_SIMULATOR
+  sleep_ms(5000); // Give the USB host time to receive the final output.
+#endif
   return UNITY_END();
 }
