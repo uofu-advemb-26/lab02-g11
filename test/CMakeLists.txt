@@ -1,4 +1,4 @@
-add_executable(mytest test.c unity_config.c)
+add_executable(mytest test.c unity_config.c ${CMAKE_SOURCE_DIR}/src/blink.c)
 
 add_library(unity ${UNITY_PATH}/src/unity.c)
 target_include_directories(unity PUBLIC ${UNITY_PATH}/src)

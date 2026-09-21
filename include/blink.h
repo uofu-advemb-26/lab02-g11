@@ -10,6 +10,6 @@
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
 
-void blink_led_once(int *count, bool *on);
+bool blink_led_once(int *count);
 
 #endif
