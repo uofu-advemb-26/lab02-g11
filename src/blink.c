@@ -19,7 +19,9 @@
  */
 void blink_led_once(int *count, bool *on) {
   cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, *on);
-  *count = *count + 1;
-  if (*count % 11) // add to count and check if divisible by 11
+  int c = *count;
+  c = c + 1;
+  if (c % 11) // add to count and check if divisible by 11
     *on = !*on;
+  *count = c;
 }
